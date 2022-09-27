@@ -1,0 +1,84 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+android {
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+
+        multipleVariants {
+            withSourcesJar()
+            withJavadocJar()
+            allVariants()
+        }
+    }
+}
+
+// AGP creates the components in afterEvaluate, so we need to use it too
+// https://developer.android.com/studio/build/maven-publish-plugin
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.release
+
+                pom {
+                    name = 'LiTr'
+                    description = project.description
+                    url = 'https://github.com/linkedin/LiTr'
+                    licenses {
+                        license {
+                            name = 'BSD 2-Clause License'
+                            url = 'https://opensource.org/licenses/BSD-2-Clause'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'com.linkedin'
+                            name = 'LinkedIn Corp'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/linkedin/LiTr.git'
+                        developerConnection = 'scm:git:ssh://github.com:linkedin/LiTr.git'
+                        url = 'https://github.com/linkedin/LiTr/tree/main'
+                    }
+                }
+
+                repositories {
+                    def sonatypeUsername = System.getenv("SONATYPE_USER")
+                    def sonatypePassword = System.getenv("SONATYPE_PASSWORD")
+                    maven {
+                        name = "sonatypeSnapshot"
+                        url = "https://oss.sonatype.org/content/repositories/snapshots"
+                        credentials {
+                            username = sonatypeUsername
+                            password = sonatypePassword
+                        }
+                    }
+                    maven {
+                        name = "mavenCentral"
+                        url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                        credentials {
+                            username = sonatypeUsername
+                            password = sonatypePassword
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // LITR_GPG_PRIVATE_KEY should contain the armoured private key that
+    // starts with -----BEGIN PGP PRIVATE KEY BLOCK-----
+    // It can be obtained with gpg --armour --export-secret-keys KEY_ID
+    def signingKey = System.getenv("LITR_GPG_PRIVATE_KEY")
+    def signingPassword = System.getenv("LITR_GPG_PRIVATE_KEY_PASSWORD")
+    signing {
+        required { signingKey != null && signingPassword != null }
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications.maven
+    }
+}

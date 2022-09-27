@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 LinkedIn Corporation -->
+<!-- All Rights Reserved. -->
+<!-- -->
+<!-- Licensed under the BSD 2-Clause License (the "License").  See License in the project root -->
+<!-- for license information. -->
+<layout>
+    <data>
+        <variable
+            name="mediaTrack"
+            type="com.linkedin.android.litr.demo.data.MediaTrackFormat" />
+
+        <variable
+            name="targetTrack"
+            type="com.linkedin.android.litr.demo.data.TargetTrack" />
+
+        <variable
+            name="presenter"
+            type="com.linkedin.android.litr.demo.data.TranscodingConfigPresenter" />
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@{String.format(@string/track_info, mediaTrack.index, mediaTrack.mimeType)}"/>
+
+        <CheckBox
+            android:id="@+id/switch_include"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/include"
+            android:textStyle="bold"
+            android:padding="@dimen/cell_padding"
+            android:checked="@={targetTrack.shouldInclude}"
+            android:onCheckedChanged="@{(switch, checked) -> presenter.onIncludeTrackChanged(targetTrack, checked)}"/>
+
+    </LinearLayout>
+
+</layout>

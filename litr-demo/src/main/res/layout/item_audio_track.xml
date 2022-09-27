@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 LinkedIn Corporation -->
+<!-- All Rights Reserved. -->
+<!-- -->
+<!-- Licensed under the BSD 2-Clause License (the "License").  See License in the project root -->
+<!-- for license information. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <import type="android.view.View"/>
+        <import type="com.linkedin.android.litr.demo.data.Converter"/>
+
+        <variable
+            name="audioTrack"
+            type="com.linkedin.android.litr.demo.data.AudioTrackFormat" />
+
+        <variable
+            name="targetTrack"
+            type="com.linkedin.android.litr.demo.data.TargetAudioTrack" />
+
+        <variable
+            name="presenter"
+            type="com.linkedin.android.litr.demo.data.TranscodingConfigPresenter" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@{String.format(@string/track_info, audioTrack.index, audioTrack.mimeType)}"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/switch_include"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/include"
+                android:textStyle="bold"
+                android:padding="@dimen/cell_padding"
+                android:checked="@={targetTrack.shouldInclude}"
+                android:onCheckedChanged="@{(switch, checked) -> presenter.onIncludeTrackChanged(targetTrack, checked)}"/>
+
+            <CheckBox
+                android:id="@+id/switch_transcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/transcode"
+                android:textStyle="bold"
+                android:padding="@dimen/cell_padding"
+                android:checked="@={targetTrack.shouldTranscode}"
+                android:visibility="@{targetTrack.shouldInclude ? View.VISIBLE : View.GONE}"
+                android:onCheckedChanged="@{(switch, checked) -> presenter.onTranscodeTrackChanged(targetTrack, checked)}"/>
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/overlay"
+                android:textStyle="bold"
+                android:padding="@dimen/cell_padding"
+                android:checked="@={targetTrack.shouldApplyOverlay}"
+                android:visibility="@{targetTrack.shouldInclude ? View.VISIBLE : View.GONE}"
+                android:onCheckedChanged="@{(switch, checked) -> presenter.onApplyOverlayChanged(targetTrack, checked)}"/>
+
+        </LinearLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="@{targetTrack.shouldInclude &amp;&amp; targetTrack.shouldTranscode ? View.VISIBLE : View.GONE}">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/channel_count"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{Converter.integerToString(audioTrack.channelCount)}"
+                    android:textAlignment="textEnd"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <EditText
+                    android:id="@+id/target_audio_channel_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@={Converter.integerToString(targetTrack.getTrackFormat().channelCount)}"
+                    android:textAlignment="textEnd"
+                    android:inputType="number"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="@dimen/edit_text_padding"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sample_rate"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{Converter.integerToString(audioTrack.samplingRate)}"
+                    android:textAlignment="textEnd"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <EditText
+                    android:id="@+id/target_audio_sample_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@={Converter.integerToString(targetTrack.getTrackFormat().samplingRate)}"
+                    android:textAlignment="textEnd"
+                    android:inputType="number"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="@dimen/edit_text_padding"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/bitrate_kbps"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{Converter.audioBitrateToString(audioTrack.bitrate)}"
+                    android:textAlignment="textEnd"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <EditText
+                    android:id="@+id/target_audio_bitrate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@={Converter.audioBitrateToString(targetTrack.getTrackFormat().bitrate)}"
+                    android:textAlignment="textEnd"
+                    android:inputType="number"
+                    android:textSize="15sp"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="@dimen/edit_text_padding"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/duration"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{audioTrack != null ? Long.toString(audioTrack.duration) : null}"
+                    android:textAlignment="textEnd"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{audioTrack != null ? Long.toString(audioTrack.duration) : null}"
+                    android:textAlignment="textEnd"
+                    android:paddingStart="@dimen/cell_padding"
+                    android:paddingEnd="@dimen/cell_padding"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="@dimen/edit_text_padding"/>
+            </TableRow>
+
+        </TableLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{targetTrack.shouldApplyOverlay ? View.VISIBLE : View.GONE}"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_pick_audio_overlay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/pick_audio_overlay"/>
+
+            <ImageButton
+                android:id="@+id/play_audio_overlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{targetTrack.overlay == null ? View.GONE : View.VISIBLE}"
+                android:src="@android:drawable/ic_media_play" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
